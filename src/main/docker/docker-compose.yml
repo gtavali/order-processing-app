@@ -1,0 +1,14 @@
+#Docker compose file to create a MariaDB
+
+version: '2.0'
+services:
+  db:
+    image: mariadb:10.2
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin #in development only
+      MYSQL_DATABASE: orderdb
+      MYSQL_USER: admin #in development only
+      MYSQL_PASSWORD: admin #in development only
