@@ -1,5 +1,6 @@
 package com.orderprocessing.entities;
 
+import com.orderprocessing.enums.Status;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -19,4 +20,13 @@ public class OrderItem {
     private Long orderItemId;
 
     private Integer salePrice;
+
+    private Integer shippingPrice;
+
+    private Integer totalItemPrice;
+
+    private String sku;
+
+    @Enumerated
+    private Status status;
 }
