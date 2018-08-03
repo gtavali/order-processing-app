@@ -7,3 +7,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+ftp:
+  server: ftp.yourftp.com
+  port: 21
+  user: user
+  passw: passw
