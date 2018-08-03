@@ -6,6 +6,7 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.orderprocessing.beans.InputFileBean;
 import com.orderprocessing.beans.ResponseFileBean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.List;
  * @author Gabor Tavali
  */
 @Service
+@Slf4j
 public class CsvService {
 
     public List<InputFileBean> readInputFile(String path) throws IOException {
@@ -34,9 +36,9 @@ public class CsvService {
         return csvToBean.parse();
     }
 
-    public void writeResponseFile(List<ResponseFileBean> response) {
+    public void writeResponseFile(List<ResponseFileBean> response, String fileName) {
         try {
-            Writer writer = Files.newBufferedWriter(Paths.get("./test.csv"));
+            Writer writer = Files.newBufferedWriter(Paths.get("./" + fileName));
 
             StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder<>(writer)
                     .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
@@ -46,7 +48,7 @@ public class CsvService {
             beanToCsv.write(response);
             writer.close();
         } catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException ex) {
-
+            log.error("Failed to write response.", ex);
         }
 
     }

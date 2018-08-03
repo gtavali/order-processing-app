@@ -2,6 +2,7 @@ package com.orderprocessing.entities;
 
 import com.orderprocessing.enums.Status;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -37,4 +38,6 @@ public class OrderItem {
         this.status = status;
         this.totalItemPrice = salePrice + shippingPrice;
     }
+
+    public OrderItem() { }
 }

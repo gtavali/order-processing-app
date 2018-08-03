@@ -1,6 +1,7 @@
 package com.orderprocessing.entities;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -45,4 +46,6 @@ public class Order {
         this.orderItems = orderItems;
         this.orderTotalValue = orderItems.stream().mapToDouble(item -> item.getTotalItemPrice()).sum();
     }
+
+    public Order() { }
 }

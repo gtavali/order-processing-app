@@ -5,11 +5,15 @@ import com.orderprocessing.beans.ResponseFileBean;
 import com.orderprocessing.enums.Status;
 import com.orderprocessing.repositories.OrderItemRepository;
 import com.orderprocessing.repositories.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -19,17 +23,26 @@ import java.util.regex.Pattern;
  * @author Gabor Tavali
  */
 @Service
+@Slf4j
 public class ValidatorService {
 
     @Autowired
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
-    OrderItemRepository orderItemRepository;
+    private OrderItemRepository orderItemRepository;
 
     enum ValidationStatus {
         OK, ERROR
     }
+
+    //For tests
+    public ValidatorService(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+    }
+
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public List<ResponseFileBean> validateAnOrderRow(InputFileBean inputFileBean) {
 
@@ -39,8 +52,14 @@ public class ValidatorService {
             validationResponse.add(new ResponseFileBean(inputFileBean.getLineNumber(), ValidationStatus.ERROR.name(), "Invalid Email address."));
         }
 
-        if (null == inputFileBean.getOrderDate()) {
-
+        if (inputFileBean.getOrderDate().isEmpty()) {
+            inputFileBean.setOrderDate(dateFormat.format(new Date()));
+        } else {
+            try {
+                dateFormat.parse(inputFileBean.getOrderDate());
+            } catch (ParseException ex) {
+                validationResponse.add(new ResponseFileBean(inputFileBean.getLineNumber(), ValidationStatus.ERROR.name(), "Invalid date format. It has to be yyyy-MM-dd."));
+            }
         }
 
         if (!validateSalePrice(inputFileBean.getSalePrice())) {
@@ -97,11 +116,11 @@ public class ValidatorService {
     }
 
     private boolean validateOrderId(Long orderId) {
-        return orderRepository.findById(orderId).isPresent();
+        return !orderRepository.findById(orderId).isPresent();
     }
 
     private boolean validateOrderItemId(Long orderItemId) {
-        return orderItemRepository.findById(orderItemId).isPresent();
+        return !orderItemRepository.findById(orderItemId).isPresent();
     }
 
 }

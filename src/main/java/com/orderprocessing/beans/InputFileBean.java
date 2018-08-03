@@ -48,7 +48,6 @@ public class InputFileBean {
     private String status;
 
     @CsvBindByName(column = "OrderDate")
-    @CsvDate(value = "yyyy-mm-dd")
-    private Date orderDate;
+    private String orderDate;
 
 }

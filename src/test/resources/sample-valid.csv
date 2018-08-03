@@ -1,0 +1,5 @@
+LineNumber;OrderItemId;OrderId;BuyerName;BuyerEmail;Address;Postcode;SalePrice;ShippingPrice;SKU;Status;OrderDate
+1;1;1;John Doe;john@doe.com;Boston;12345;100.20;10;sku;IN_STOCK;2018-08-02
+2;2;1;John Doe;john@doe.com;Boston;12345;50;10.3;sku;IN_STOCK;2018-08-02
+3;3;2;Neal Armstrong;neal@armstrong.com;Houston;54321;30;5;sku;OUT_OF_STOCK;2018-08-03
+4;4;3;Buzz Aldrin;buzz@aldrin.com;London;54236;15;2;sku;IN_STOCK;2018-08-03

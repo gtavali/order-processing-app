@@ -6,21 +6,25 @@ import com.orderprocessing.entities.Order;
 import com.orderprocessing.entities.OrderItem;
 import com.orderprocessing.enums.Status;
 import com.orderprocessing.repositories.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Persistent service for prepare and persist orders and report.
+ * Order processing service for prepare and persist orders and report.
  *
  * @author Gabor Tavali
  */
 @Service
-public class PersistentService {
+@Slf4j
+public class OrderProcessingService {
 
     @Autowired
     CsvService csvService;
@@ -31,9 +35,14 @@ public class PersistentService {
     @Autowired
     OrderRepository orderRepository;
 
-    public void processInputFile(List<InputFileBean> inputFile) {
+    @Autowired
+    FtpService ftpService;
+
+    public void processOrder(List<InputFileBean> inputFile) throws ParseException {
         List<Order> orders = new ArrayList<>();
         List<ResponseFileBean> responseFile = new ArrayList<>();
+
+        String reponseFileName = "response.csv";
 
         Map<Long, List<InputFileBean>> mapByOrderId = inputFile.stream()
                 .collect(Collectors.groupingBy(InputFileBean::getOrderId, Collectors.toList())
@@ -47,13 +56,15 @@ public class PersistentService {
 
                 if (!validationResult.isEmpty()) {
                     responseFile.addAll(validationResult);
-                    System.out.println("Validation failed!");
-                    csvService.writeResponseFile(responseFile);
+                    log.error("Validation failed at line " + inputFileBean.getLineNumber() + "! See the response file: " + reponseFileName + " for further details.");
+                    csvService.writeResponseFile(responseFile, reponseFileName);
                     System.exit(1);
                 }
 
+                log.info("Validation was successful at line " + inputFileBean.getLineNumber() + ".");
+
                 responseFile.add(new ResponseFileBean(inputFileBean.getLineNumber(), ValidatorService.ValidationStatus.OK.name(), ""));
-                csvService.writeResponseFile(responseFile);
+                csvService.writeResponseFile(responseFile, reponseFileName);
 
                 return new OrderItem(
                         inputFileBean.getOrderItemId(),
@@ -68,7 +79,7 @@ public class PersistentService {
                     entry.getKey(),
                     firstItem.getBuyerName(),
                     firstItem.getBuyerEmail(),
-                    firstItem.getOrderDate(),
+                    ValidatorService.dateFormat.parse(firstItem.getOrderDate()),
                     firstItem.getAddress(),
                     firstItem.getPostcode(),
                     orderItems
@@ -76,7 +87,10 @@ public class PersistentService {
             orders.add(order);
         }
 
+        ftpService.upload(new File("./" + reponseFileName));
+
         orders.forEach(order -> orderRepository.save(order));
+        log.info("Order is saved to database.");
 
     }
 
