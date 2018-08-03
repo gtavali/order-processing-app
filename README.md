@@ -31,7 +31,7 @@ docker-compose up -d
 without logs.\
 In this case you need to install Docker to your machine.\
 https://www.docker.com \
-The credentials comes from the application.yml file (/order-processing-app/src/main/resources/).
+The credentials come from the application.yml file (/order-processing-app/src/main/resources/).
 
 ```
 spring:
