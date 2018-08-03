@@ -17,7 +17,6 @@ import java.util.List;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
     private String buyerName;
@@ -26,7 +25,7 @@ public class Order {
 
     private Date orderDate;
 
-    private Integer orderTotalValue;
+    private double orderTotalValue;
 
     private String address;
 
@@ -35,4 +34,15 @@ public class Order {
     @OneToMany(targetEntity = OrderItem.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private List<OrderItem> orderItems;
+
+    public Order(Long orderId, String buyerName, String buyerEmail, Date orderDate, String address, Integer postcode, List<OrderItem> orderItems) {
+        this.orderId = orderId;
+        this.buyerName = buyerName;
+        this.buyerEmail = buyerEmail;
+        this.orderDate = orderDate;
+        this.address = address;
+        this.postcode = postcode;
+        this.orderItems = orderItems;
+        this.orderTotalValue = orderItems.stream().mapToDouble(item -> item.getTotalItemPrice()).sum();
+    }
 }

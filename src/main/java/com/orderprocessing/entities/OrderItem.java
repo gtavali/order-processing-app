@@ -16,17 +16,25 @@ import javax.persistence.*;
 public class OrderItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderItemId;
 
-    private Integer salePrice;
+    private double salePrice;
 
-    private Integer shippingPrice;
+    private double shippingPrice;
 
-    private Integer totalItemPrice;
+    private double totalItemPrice;
 
     private String sku;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private Status status;
+
+    public OrderItem(Long orderItemId, double salePrice, double shippingPrice, String sku, Status status) {
+        this.orderItemId = orderItemId;
+        this.salePrice = salePrice;
+        this.shippingPrice = shippingPrice;
+        this.sku = sku;
+        this.status = status;
+        this.totalItemPrice = salePrice + shippingPrice;
+    }
 }
