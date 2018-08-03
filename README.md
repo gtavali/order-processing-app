@@ -2,8 +2,8 @@
 Simulation of an order processing application.
 Developed by Gabor Tavali.
 
-The application is able to parse an order CSV file with a standard header. (See below.)\
-It go through the lines, validate it, persist orders to the database then upload a result file to an FTP server.
+The application is able to parse an order CSV file with a given header. (See below.)\
+It goes through the lines, validate it, persist orders to the database then upload a result file to an FTP server.
 
 ## Technology Stack
 * Spring, Spring Boot
@@ -30,9 +30,18 @@ docker-compose up -d
 ```
 without logs.\
 In this case you need to install Docker to your machine.\
-TODO: link\
+https://www.docker.com\
+The credentials comes from the application.yml file (/order-processing-app/src/main/resources/).
 
-Feel free to configure your own MariaDB.\
+```
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/orderdb
+    username: admin
+    password: admin
+```
+
+If you don't want to use Docker, feel free to configure your own MariaDB.\
 Visit the application.yml file (/order-processing-app/src/main/resources/) and modify the following lines:
 ```
 spring:
